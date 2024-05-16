@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "93515009375",
+    "project_id": "firstest-e5370",
+    "storage_bucket": "firstest-e5370.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93515009375:android:8f2117dcd077ab2f54faea",
+        "android_client_info": {
+          "package_name": "com.example.lessons10"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0IBCyDHg6oHeO-7EK2-y31S_clYEYoMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
