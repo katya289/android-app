@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String accessToken) {
                 Toast.makeText(MainActivity.this, "Token received: " + accessToken, Toast.LENGTH_SHORT).show();
-                authService.startMainPageActivity(MainActivity.this, accessToken); // Передача accessToken
+                authService.startMainPageActivity(MainActivity.this, accessToken);
             }
 
             @Override

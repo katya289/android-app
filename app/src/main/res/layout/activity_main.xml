@@ -12,7 +12,7 @@
         android:gravity="center"
         android:orientation="vertical">
         <TextView
-            android:text="REG"
+            android:text="Authentication"
             android:layout_margin="45dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">

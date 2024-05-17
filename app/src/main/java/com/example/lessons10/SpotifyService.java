@@ -22,7 +22,7 @@ public class SpotifyService {
     private static final String TAG = "SpotifyService";
     private static final String BASE_URL = "https://api.spotify.com/v1/";
 
-    private OkHttpClient client;
+    private final OkHttpClient client;
 
     public SpotifyService() {
         client = new OkHttpClient();
@@ -63,7 +63,7 @@ public class SpotifyService {
 
     public void getTracks(String accessToken, final TracksCallback callback) {
         Request request = new Request.Builder()
-                .url(BASE_URL + "tracks/2takcwOaAZWiXQijPHIx7B")
+                .url(BASE_URL + "tracks/?ids=7ouMYWpwJ422jRcDASZB7P,4VqPOruhp5EdPBeR92t6lQ,2takcwOaAZWiXQijPHIx7B")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -82,20 +82,15 @@ public class SpotifyService {
                 }
                 try {
 
-                    JSONObject json = new JSONObject(response.body().string());
-                    JSONObject album = json.getJSONObject("album");
-                    JSONArray images = album.getJSONArray("images");
-                    String name = json.getString("name");
-                    String type = json.getString("type");
-                    String imageUrl = images.getJSONObject(0).getString("url");
-                    String previewUrl = json.getString("preview_url");
-                    JSONArray artistsArray = json.getJSONArray("artists");
-                    JSONObject artist = artistsArray.getJSONObject(0);
-                    String artistName = artist.getString("name");
-
-
-
-                    callback.onSuccess(name, type, imageUrl, previewUrl, artistName);
+                    JSONObject jsonResponse = new JSONObject(response.body().string());
+                    JSONArray tracksArray = jsonResponse.getJSONArray("tracks");
+                    List<Track> tracks = new ArrayList<>();
+                    for (int i = 0; i < tracksArray.length(); i++) {
+                        JSONObject trackObject = tracksArray.getJSONObject(i);
+                        Track track = parseTrack(trackObject);
+                        tracks.add(track);
+                    }
+                    callback.onSuccess(tracks);
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Failed to parse tracks info response", e);
@@ -103,6 +98,18 @@ public class SpotifyService {
                 }
             }
         });
+    }
+    private Track parseTrack(JSONObject trackObject) throws JSONException {
+        Track track = new Track();
+        track.setName(trackObject.getString("name"));
+        track.setType(trackObject.getString("type"));
+        JSONArray imagesArray = trackObject.getJSONObject("album").getJSONArray("images");
+        track.setImageUrl(imagesArray.getJSONObject(0).getString("url"));
+        track.setPreviewUrl(trackObject.getString("preview_url"));
+        JSONArray artistsArray = trackObject.getJSONArray("artists");
+        JSONObject artist = artistsArray.getJSONObject(0);
+        track.setArtistName(artist.getString("name"));
+        return track;
     }
 
 
@@ -112,7 +119,8 @@ public class SpotifyService {
     }
 
     public interface TracksCallback {
-        void onSuccess(String name, String type, String imageUrl, String previewUrl, String artistName);
+        void onSuccess(List<Track> tracks);
         void onFailure(Exception e);
     }
+
 }

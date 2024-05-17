@@ -12,6 +12,8 @@ import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 public class AuthService {
     private static final String CLIENT_ID = "4479fdda449f455281bb1e6aceb7142d";
+
+
     private static final String REDIRECT_URI = "com.example.android://oauth2redirect";
 
     private static final int REQUEST_CODE = 1337;
@@ -59,7 +61,7 @@ public class AuthService {
         Intent intent = new Intent(activity, MainPageActivity.class);
         intent.putExtra("ACCESS_TOKEN", accessToken);
         activity.startActivity(intent);
-        activity.finish(); // Опционально: закрыть текущую активити после перехода на MainPageActivity
+        activity.finish();
     }
 
     public interface AuthCallback {

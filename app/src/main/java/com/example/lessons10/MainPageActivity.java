@@ -1,86 +1,52 @@
 package com.example.lessons10;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
-
-import java.io.IOException;
 import java.util.List;
 
 public class MainPageActivity extends AppCompatActivity {
 
-    private ListView lvAudiobooks;
+    private ViewPager2 viewPager;
     private SpotifyService spotifyService;
-
-    private TextView nameTextView;
-    private TextView typeTextView;
-    private ImageView trackImageView;
-    private Button playButton;
-    private MediaPlayer mediaPlayer;
-
-    private TextView artistNameTextView;
-    private Button stopButton;
+    private TracksPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
-        trackImageView = findViewById(R.id.trackImageView);
-        nameTextView = findViewById(R.id.trackNameTextView);
-        typeTextView = findViewById(R.id.typeTextView);
-        artistNameTextView = findViewById(R.id.artistNameTextView);
-        stopButton = findViewById(R.id.stopButton);
-        playButton = findViewById(R.id.playButton);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setClipToPadding(false);
+        viewPager.setPadding(40, 0, 40, 0);
+        viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(View page, float position) {
+                page.setTranslationX(-40 * position);
+            }
+        });
+
         spotifyService = new SpotifyService();
         String accessToken = getIntent().getStringExtra("ACCESS_TOKEN");
 
         if (accessToken != null) {
             spotifyService.getTracks(accessToken, new SpotifyService.TracksCallback() {
                 @Override
-                public void onSuccess(String name, String type, String imageUrl, String previewUrl, String artistName) {
+                public void onSuccess(List<Track> tracks) {
                     runOnUiThread(() -> {
-                        nameTextView.setText(name);
-                        typeTextView.setText(type);
-                        artistNameTextView.setText(artistName);
-
-                        Glide.with(MainPageActivity.this).load(imageUrl).into(trackImageView);
-                        playButton.setOnClickListener(v -> {
-                            if (previewUrl != null && !previewUrl.isEmpty()) {
-                                try {
-                                    mediaPlayer = new MediaPlayer();
-                                    mediaPlayer.setDataSource(previewUrl);
-                                    mediaPlayer.prepareAsync();
-                                    mediaPlayer.setOnPreparedListener(mp -> {
-                                        mediaPlayer.start();
-                                    });
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    Toast.makeText(MainPageActivity.this, "Failed to play track", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            else {
-                                // Preview URL is not available
-                                Toast.makeText(MainPageActivity.this, "Preview not available for this track", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        adapter = new TracksPagerAdapter(MainPageActivity.this, tracks);
+                        viewPager.setAdapter(adapter);
                     });
-                    stopButton.setOnClickListener(v -> {
-                        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        }
-                    });
-
                 }
 
                 @Override
@@ -91,9 +57,25 @@ public class MainPageActivity extends AppCompatActivity {
                 }
             });
         } else {
-
             Toast.makeText(this, "Access token not found", Toast.LENGTH_SHORT).show();
         }
     }
+    // Добавление иконки в ActionBar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main_page, menu);
+        return true;
+    }
 
+    // Обработка нажатия на иконку в ActionBar
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_user_profile) {
+            // Обработка нажатия на иконку пользователя
+            // Здесь вы можете открыть активность с информацией о пользователе или выполнить другое действие
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
