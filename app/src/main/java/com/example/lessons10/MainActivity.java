@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String accessToken) {
                 Toast.makeText(MainActivity.this, "Token received: " + accessToken, Toast.LENGTH_SHORT).show();
-                // Здесь можно вызвать методы вашего SpotifyService для выполнения запросов к API Spotify
+                authService.startMainPageActivity(MainActivity.this, accessToken); // Передача accessToken
             }
 
             @Override
@@ -42,4 +42,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, this);
     }
+
+
 }

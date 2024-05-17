@@ -55,10 +55,15 @@ public class AuthService {
         }
     }
 
+    void startMainPageActivity(Activity activity, String accessToken) {
+        Intent intent = new Intent(activity, MainPageActivity.class);
+        intent.putExtra("ACCESS_TOKEN", accessToken);
+        activity.startActivity(intent);
+        activity.finish(); // Опционально: закрыть текущую активити после перехода на MainPageActivity
+    }
 
     public interface AuthCallback {
         void onSuccess(String accessToken);
         void onError();
     }
 }
-
